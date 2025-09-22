@@ -17,11 +17,9 @@ export default async function handler(req, res) {
             });
         }
 
-        // Create TwiML that will dial the second number when first person answers
+        // Create TwiML that will dial the second number when first person answers (silent)
         const twiml = `<Response>
-            <Say>Please hold while we connect your call.</Say>
             <Dial timeout="30" callerId="${process.env.TWILIO_PHONE_NUMBER}">${to}</Dial>
-            <Say>Sorry, the call could not be connected. Please try again later.</Say>
         </Response>`;
 
         // Make the initial call to the "from" number

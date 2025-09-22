@@ -9,15 +9,15 @@ export default async function handler(req, res) {
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
     try {
-        const { to, message = "Hello! This is a call from your Twilio application." } = req.body;
+        const { to } = req.body;
 
         if (!to) {
             return res.status(400).json({ error: 'Phone number (to) is required' });
         }
 
-        // Make the call
+        // Make the call (silent - just connects)
         const call = await client.calls.create({
-            twiml: `<Response><Say>${message}</Say></Response>`,
+            twiml: `<Response></Response>`,
             to: to,
             from: process.env.TWILIO_PHONE_NUMBER
         });
