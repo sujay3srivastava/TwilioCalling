@@ -154,27 +154,31 @@ export default function handler(req, res) {
 
         <form id="callForm">
             <div class="form-group">
-                <label for="toNumber">Call To (Phone Number):</label>
+                <label for="fromNumber">📞 Call From (First Number):</label>
+                <input
+                    type="tel"
+                    id="fromNumber"
+                    name="fromNumber"
+                    placeholder="+919833230099"
+                    required
+                >
+                <small style="color: #666; font-size: 14px;">This number will be called first</small>
+            </div>
+
+            <div class="form-group">
+                <label for="toNumber">🔗 Connect To (Second Number):</label>
                 <input
                     type="tel"
                     id="toNumber"
                     name="toNumber"
-                    placeholder="+919833230099"
+                    placeholder="+919765454491"
                     required
                 >
-            </div>
-
-            <div class="form-group">
-                <label for="message">Message (Optional):</label>
-                <textarea
-                    id="message"
-                    name="message"
-                    placeholder="Hello! This is a call from Twilio..."
-                ></textarea>
+                <small style="color: #666; font-size: 14px;">This number will be connected after first person answers</small>
             </div>
 
             <button type="submit" class="call-btn" id="callBtn">
-                🚀 Make Call
+                🚀 Connect Call
             </button>
         </form>
 
@@ -193,24 +197,24 @@ export default function handler(req, res) {
             const btn = document.getElementById('callBtn');
             const loading = document.getElementById('loading');
             const result = document.getElementById('result');
+            const fromNumber = document.getElementById('fromNumber').value;
             const toNumber = document.getElementById('toNumber').value;
-            const message = document.getElementById('message').value;
 
             // Show loading state
             btn.disabled = true;
-            btn.textContent = 'Making Call...';
+            btn.textContent = 'Connecting Call...';
             loading.style.display = 'block';
             result.style.display = 'none';
 
             try {
-                const response = await fetch('/api/make-call', {
+                const response = await fetch('/api/connect-call', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        to: toNumber,
-                        message: message || 'Hello! This is a call from your Twilio application.'
+                        from: fromNumber,
+                        to: toNumber
                     })
                 });
 
@@ -219,11 +223,12 @@ export default function handler(req, res) {
                 if (data.success) {
                     result.className = 'result success';
                     result.innerHTML = \`
-                        <h3>✅ Call Initiated Successfully!</h3>
+                        <h3>✅ Call Connection Initiated!</h3>
                         <p><strong>Call SID:</strong> \${data.callSid}</p>
-                        <p><strong>From:</strong> \${data.from}</p>
-                        <p><strong>To:</strong> \${data.to}</p>
+                        <p><strong>Calling First:</strong> \${data.firstNumber}</p>
+                        <p><strong>Will Connect To:</strong> \${data.secondNumber}</p>
                         <p><strong>Status:</strong> \${data.status}</p>
+                        <p><small>The first number will be called, then connected to the second number when answered.</small></p>
                     \`;
                 } else {
                     throw new Error(data.error || 'Failed to make call');
@@ -237,25 +242,27 @@ export default function handler(req, res) {
             } finally {
                 // Reset button state
                 btn.disabled = false;
-                btn.textContent = '🚀 Make Call';
+                btn.textContent = '🚀 Connect Call';
                 loading.style.display = 'none';
                 result.style.display = 'block';
             }
         });
 
-        // Auto-format phone number
-        document.getElementById('toNumber').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\\D/g, '');
-            if (value && !value.startsWith('+')) {
-                if (value.startsWith('91') && value.length >= 12) {
-                    value = '+' + value;
-                } else if (value.startsWith('1') && value.length >= 11) {
-                    value = '+' + value;
-                } else if (value.length >= 10) {
-                    value = '+91' + value;
+        // Auto-format phone numbers
+        ['fromNumber', 'toNumber'].forEach(fieldId => {
+            document.getElementById(fieldId).addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\\D/g, '');
+                if (value && !value.startsWith('+')) {
+                    if (value.startsWith('91') && value.length >= 12) {
+                        value = '+' + value;
+                    } else if (value.startsWith('1') && value.length >= 11) {
+                        value = '+' + value;
+                    } else if (value.length >= 10) {
+                        value = '+91' + value;
+                    }
                 }
-            }
-            e.target.value = value;
+                e.target.value = value;
+            });
         });
     </script>
 </body>
