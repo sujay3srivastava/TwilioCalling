@@ -248,20 +248,15 @@ export default function handler(req, res) {
             }
         });
 
-        // Auto-format phone numbers
+        // Basic phone number formatting - only add + if user types numbers without it
         ['fromNumber', 'toNumber'].forEach(fieldId => {
             document.getElementById(fieldId).addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\\D/g, '');
-                if (value && !value.startsWith('+')) {
-                    if (value.startsWith('91') && value.length >= 12) {
-                        value = '+' + value;
-                    } else if (value.startsWith('1') && value.length >= 11) {
-                        value = '+' + value;
-                    } else if (value.length >= 10) {
-                        value = '+91' + value;
-                    }
+                let value = e.target.value;
+
+                // Only add + if user starts typing numbers and hasn't included it
+                if (value && /^[0-9]/.test(value) && !value.startsWith('+')) {
+                    e.target.value = '+' + value;
                 }
-                e.target.value = value;
             });
         });
     </script>
