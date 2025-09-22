@@ -23,10 +23,6 @@ export default function handler(req, res) {
         callerId: req.body.To // Use your Twilio number as caller ID
     }, '+919833230099');
 
-    // If the call fails to connect
-    twiml.say('Sorry, we are unable to connect your call at this time. Please try again later.');
-    twiml.hangup();
-
     // Send TwiML response
     res.setHeader('Content-Type', 'text/xml');
     res.status(200).send(twiml.toString());
