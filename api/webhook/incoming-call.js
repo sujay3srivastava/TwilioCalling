@@ -17,11 +17,11 @@ export default function handler(req, res) {
     // Create TwiML response
     const twiml = new twilio.twiml.VoiceResponse();
 
-    // Directly redirect all incoming calls to +91 9765454491
+    // Directly redirect all incoming calls to +91 9833230099
     twiml.dial({
         timeout: 30,
         callerId: req.body.To // Use your Twilio number as caller ID
-    }, '+919765454491');
+    }, '+919833230099');
 
     // If the call fails to connect
     twiml.say('Sorry, we are unable to connect your call at this time. Please try again later.');
