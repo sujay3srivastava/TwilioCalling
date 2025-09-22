@@ -248,17 +248,7 @@ export default function handler(req, res) {
             }
         });
 
-        // Basic phone number formatting - only add + if user types numbers without it
-        ['fromNumber', 'toNumber'].forEach(fieldId => {
-            document.getElementById(fieldId).addEventListener('input', function(e) {
-                let value = e.target.value;
-
-                // Only add + if user starts typing numbers and hasn't included it
-                if (value && /^[0-9]/.test(value) && !value.startsWith('+')) {
-                    e.target.value = '+' + value;
-                }
-            });
-        });
+        // No automatic formatting - let users type exactly what they want
     </script>
 </body>
 </html>`);
