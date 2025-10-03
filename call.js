@@ -188,6 +188,40 @@ async function checkCallStatus(callSid) {
     }
 }
 
+/**
+ * Send an SMS message to a specified number
+ * @param {string} toNumber - The phone number to send SMS to (format: +1234567890)
+ * @param {string} message - The message to send
+ */
+async function sendSMS(toNumber, message) {
+    if (!toNumber) {
+        throw new Error('Phone number is required for sending SMS');
+    }
+    if (!message) {
+        throw new Error('Message is required for sending SMS');
+    }
+
+    try {
+        const sms = await client.messages.create({
+            body: message,
+            to: toNumber,
+            from: process.env.TWILIO_PHONE_NUMBER
+        });
+
+        console.log(`SMS sent successfully!`);
+        console.log(`Message SID: ${sms.sid}`);
+        console.log(`From: ${process.env.TWILIO_PHONE_NUMBER}`);
+        console.log(`To: ${toNumber}`);
+        console.log(`Status: ${sms.status}`);
+        console.log(`Message: ${message}`);
+
+        return sms;
+    } catch (error) {
+        console.error('Error sending SMS:', error.message);
+        throw error;
+    }
+}
+
 // Command line interface
 async function main() {
     const args = process.argv.slice(2);
@@ -225,6 +259,14 @@ async function main() {
                 return;
             }
             await checkCallStatus(callSid);
+        } else if (command === 'sms') {
+            const [phoneNumber, ...messageParts] = rest;
+            const message = messageParts.join(' ');
+            if (!phoneNumber || !message) {
+                console.error('SMS requires a phone number and message: node call.js sms +1234567890 Your message here');
+                return;
+            }
+            await sendSMS(phoneNumber, message);
         } else {
             // Check if first argument is a phone number (starts with +) or a message
             if (command.startsWith('+')) {
@@ -250,7 +292,8 @@ module.exports = {
     makeInteractiveCall,
     makeTwoWayCall,
     makeConferenceCall,
-    checkCallStatus
+    checkCallStatus,
+    sendSMS
 };
 
 // Run main function if called directly
