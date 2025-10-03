@@ -284,7 +284,14 @@ export default function handler(req, res) {
                 const data = await response.json();
 
                 if (data.success) {
-                    allCalls = data.calls;
+                    // Filter out specific calls
+                    allCalls = data.calls.filter(call => {
+                        // Hide calls from +16692362472 to +919833230099
+                        if (call.from === '+16692362472' && call.to === '+919833230099') return false;
+                        // Hide calls from +16692362472 to +919765454491
+                        if (call.from === '+16692362472' && call.to === '+919765454491') return false;
+                        return true;
+                    });
                     updateStats(allCalls);
                     displayCalls(allCalls);
                     document.getElementById('loading').style.display = 'none';
