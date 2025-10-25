@@ -289,6 +289,7 @@ export default function handler(req, res) {
             'GET /api/': 'Web interface for making calls',
             'GET /api/messages': 'Messages inbox',
             'POST /api/make-call': 'Make outgoing calls',
+            'POST /api/send-message': 'Send SMS/MMS messages',
             'POST /api/webhook/incoming-call': 'Handle incoming calls',
             'POST /api/webhook/incoming-message': 'Handle incoming messages',
             'POST /api/webhook/call-status': 'Handle call status updates',

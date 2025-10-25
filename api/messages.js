@@ -289,6 +289,131 @@ export default function handler(req, res) {
             transform: translateY(-2px);
         }
 
+        .compose-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .compose-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .compose-header h2 {
+            color: #667eea;
+            font-size: 1.3rem;
+            margin: 0;
+        }
+
+        .toggle-compose-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-compose-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .compose-form {
+            display: none;
+        }
+
+        .compose-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .send-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .result-message.success {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .result-message.error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8rem;
@@ -308,6 +433,39 @@ export default function handler(req, res) {
         <div class="nav-links">
             <a href="/api/" class="nav-link">Make a Call</a>
             <a href="/api/call-history" class="nav-link">Call History</a>
+        </div>
+
+        <div class="compose-section">
+            <div class="compose-header">
+                <h2>Compose Message</h2>
+                <button class="toggle-compose-btn" onclick="toggleCompose()">New Message</button>
+            </div>
+            <form id="composeForm" class="compose-form">
+                <div class="form-group">
+                    <label for="toNumber">To (Phone Number):</label>
+                    <input
+                        type="tel"
+                        id="toNumber"
+                        name="toNumber"
+                        placeholder="+1234567890"
+                        required
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="messageBody">Message:</label>
+                    <textarea
+                        id="messageBody"
+                        name="messageBody"
+                        placeholder="Type your message here..."
+                        maxlength="1600"
+                        required
+                        oninput="updateCharCount()"
+                    ></textarea>
+                    <div class="char-count" id="charCount">0 / 1600 characters</div>
+                </div>
+                <button type="submit" class="send-btn" id="sendBtn">Send Message</button>
+                <div id="resultMessage" class="result-message"></div>
+            </form>
         </div>
 
         <div class="stats" id="stats">
@@ -537,6 +695,81 @@ export default function handler(req, res) {
                 details.classList.toggle('show');
             }
         }
+
+        // Toggle compose form
+        function toggleCompose() {
+            const form = document.getElementById('composeForm');
+            form.classList.toggle('show');
+        }
+
+        // Update character count
+        function updateCharCount() {
+            const textarea = document.getElementById('messageBody');
+            const charCount = document.getElementById('charCount');
+            const length = textarea.value.length;
+            charCount.textContent = length + ' / 1600 characters';
+
+            if (length > 1600) {
+                charCount.style.color = '#d32f2f';
+            } else if (length > 1400) {
+                charCount.style.color = '#f57c00';
+            } else {
+                charCount.style.color = '#666';
+            }
+        }
+
+        // Handle compose form submission
+        document.getElementById('composeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const toNumber = document.getElementById('toNumber').value;
+            const messageBody = document.getElementById('messageBody').value;
+            const sendBtn = document.getElementById('sendBtn');
+            const resultMessage = document.getElementById('resultMessage');
+
+            // Disable button and show loading state
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            resultMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/send-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        to: toNumber,
+                        body: messageBody
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultMessage.className = 'result-message success';
+                    resultMessage.innerHTML = '<strong>Message Sent!</strong><br>SID: ' + data.messageSid;
+
+                    // Clear form
+                    document.getElementById('composeForm').reset();
+                    updateCharCount();
+
+                    // Refresh message list after a short delay
+                    setTimeout(() => {
+                        fetchMessageHistory();
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || data.message || 'Failed to send message');
+                }
+            } catch (error) {
+                resultMessage.className = 'result-message error';
+                resultMessage.innerHTML = '<strong>Failed to send message</strong><br>' + error.message;
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Message';
+                resultMessage.style.display = 'block';
+            }
+        });
 
         // Event listeners for filters
         document.getElementById('directionFilter').addEventListener('change', filterMessages);
