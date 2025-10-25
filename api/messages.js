@@ -185,6 +185,36 @@ export default function handler(req, res) {
             word-wrap: break-word;
         }
 
+        .message-details {
+            margin-top: 8px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #666;
+            display: none;
+        }
+
+        .message-details.show {
+            display: block;
+        }
+
+        .details-btn {
+            margin-top: 8px;
+            padding: 4px 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .details-btn:hover {
+            background: #5568d3;
+        }
+
         .message-time {
             color: #666;
             font-size: 0.85rem;
@@ -308,6 +338,14 @@ export default function handler(req, res) {
     <script>
         let allMessages = [];
 
+        // Helper function to escape HTML entities
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Fetch message history
         async function fetchMessageHistory() {
             try {
@@ -383,18 +421,32 @@ export default function handler(req, res) {
                 const fromLabel = message.direction === 'inbound' ? 'From' : 'To';
                 const phoneNumber = message.direction === 'inbound' ? message.from : message.to;
 
+                // Escape HTML in message body to prevent rendering issues
+                const messageBody = escapeHtml(message.body) || '(No text content)';
+                const errorMsg = message.errorMessage ? escapeHtml(message.errorMessage) : '';
+
                 card.innerHTML = \`
                     <div class="message-header">
                         <div class="message-info">
                             \${directionBadge}
-                            <span><strong>\${fromLabel}:</strong> <span class="phone">\${phoneNumber}</span></span>
+                            <span><strong>\${fromLabel}:</strong> <span class="phone">\${escapeHtml(phoneNumber)}</span></span>
                             \${statusBadge}
                         </div>
                         <div class="message-time">\${dateStr}</div>
                     </div>
-                    <div class="message-body">\${message.body || '(No text content)'}</div>
+                    <div class="message-body">\${messageBody}</div>
                     \${message.numMedia && message.numMedia !== '0' ? '<div style="margin-top: 8px; color: #666; font-size: 0.85rem;">📎 ' + message.numMedia + ' media attachment(s)</div>' : ''}
-                    \${message.errorMessage ? '<div style="margin-top: 8px; color: #d32f2f; font-size: 0.85rem;">Error: ' + message.errorMessage + '</div>' : ''}
+                    \${errorMsg ? '<div style="margin-top: 8px; color: #d32f2f; font-size: 0.85rem;">Error: ' + errorMsg + '</div>' : ''}
+                    <button class="details-btn" onclick="toggleDetails('\${message.sid}')">View Details</button>
+                    <div class="message-details" id="details-\${message.sid}">
+                        <strong>Message SID:</strong> \${message.sid}<br>
+                        <strong>From:</strong> \${escapeHtml(message.from)}<br>
+                        <strong>To:</strong> \${escapeHtml(message.to)}<br>
+                        <strong>Segments:</strong> \${message.numSegments || 'N/A'}<br>
+                        <strong>Price:</strong> \${message.price ? message.price + ' ' + message.priceUnit : 'N/A'}<br>
+                        <strong>Created:</strong> \${message.dateCreated ? new Date(message.dateCreated).toLocaleString() : 'N/A'}<br>
+                        <strong>Body Length:</strong> \${message.body ? message.body.length : 0} characters
+                    </div>
                 \`;
 
                 container.appendChild(card);
@@ -425,6 +477,14 @@ export default function handler(req, res) {
             }
 
             displayMessages(filtered);
+        }
+
+        // Toggle message details
+        function toggleDetails(sid) {
+            const details = document.getElementById('details-' + sid);
+            if (details) {
+                details.classList.toggle('show');
+            }
         }
 
         // Event listeners for filters
