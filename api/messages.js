@@ -115,6 +115,29 @@ export default function handler(req, res) {
             background: #f3f0ff;
         }
 
+        .message-card.failed {
+            border-left-color: #d32f2f;
+            background: #fff5f5;
+        }
+
+        .error-alert {
+            margin-top: 10px;
+            padding: 10px;
+            background: #ffebee;
+            border: 1px solid #ef5350;
+            border-radius: 5px;
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .error-code {
+            font-family: 'Courier New', monospace;
+            background: #ffcdd2;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
         .message-header {
             display: flex;
             justify-content: space-between;
@@ -396,7 +419,14 @@ export default function handler(req, res) {
 
             messages.forEach(message => {
                 const card = document.createElement('div');
-                card.className = 'message-card' + (message.direction === 'outbound-api' || message.direction === 'outbound' ? ' outbound' : '');
+                let cardClass = 'message-card';
+                if (message.direction === 'outbound-api' || message.direction === 'outbound') {
+                    cardClass += ' outbound';
+                }
+                if (message.status === 'failed' || message.status === 'undelivered') {
+                    cardClass += ' failed';
+                }
+                card.className = cardClass;
 
                 const directionBadge = (message.direction === 'inbound') ?
                     '<span class="badge badge-inbound">Incoming</span>' :
@@ -424,6 +454,23 @@ export default function handler(req, res) {
                 // Escape HTML in message body to prevent rendering issues
                 const messageBody = escapeHtml(message.body) || '(No text content)';
                 const errorMsg = message.errorMessage ? escapeHtml(message.errorMessage) : '';
+                const errorCode = message.errorCode || '';
+
+                // Build error alert for failed messages
+                let errorAlert = '';
+                if (message.status === 'failed' || message.status === 'undelivered') {
+                    errorAlert = '<div class="error-alert">';
+                    errorAlert += '⚠️ <strong>Message Failed</strong>';
+                    if (errorCode) {
+                        errorAlert += ' <span class="error-code">Error ' + errorCode + '</span>';
+                    }
+                    if (errorMsg) {
+                        errorAlert += '<br>' + errorMsg;
+                    } else {
+                        errorAlert += '<br>This message was not successfully delivered.';
+                    }
+                    errorAlert += '</div>';
+                }
 
                 card.innerHTML = \`
                     <div class="message-header">
@@ -434,17 +481,21 @@ export default function handler(req, res) {
                         </div>
                         <div class="message-time">\${dateStr}</div>
                     </div>
+                    \${errorAlert}
                     <div class="message-body">\${messageBody}</div>
                     \${message.numMedia && message.numMedia !== '0' ? '<div style="margin-top: 8px; color: #666; font-size: 0.85rem;">📎 ' + message.numMedia + ' media attachment(s)</div>' : ''}
-                    \${errorMsg ? '<div style="margin-top: 8px; color: #d32f2f; font-size: 0.85rem;">Error: ' + errorMsg + '</div>' : ''}
                     <button class="details-btn" onclick="toggleDetails('\${message.sid}')">View Details</button>
                     <div class="message-details" id="details-\${message.sid}">
                         <strong>Message SID:</strong> \${message.sid}<br>
                         <strong>From:</strong> \${escapeHtml(message.from)}<br>
                         <strong>To:</strong> \${escapeHtml(message.to)}<br>
+                        <strong>Status:</strong> \${message.status}<br>
+                        \${errorCode ? '<strong>Error Code:</strong> ' + errorCode + '<br>' : ''}
+                        \${errorMsg ? '<strong>Error Message:</strong> ' + errorMsg + '<br>' : ''}
                         <strong>Segments:</strong> \${message.numSegments || 'N/A'}<br>
                         <strong>Price:</strong> \${message.price ? message.price + ' ' + message.priceUnit : 'N/A'}<br>
                         <strong>Created:</strong> \${message.dateCreated ? new Date(message.dateCreated).toLocaleString() : 'N/A'}<br>
+                        <strong>Sent:</strong> \${message.dateSent ? new Date(message.dateSent).toLocaleString() : 'N/A'}<br>
                         <strong>Body Length:</strong> \${message.body ? message.body.length : 0} characters
                     </div>
                 \`;
