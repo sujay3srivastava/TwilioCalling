@@ -194,6 +194,29 @@ export default function handler(req, res) {
             color: #666;
         }
 
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 1.8rem;
@@ -212,6 +235,11 @@ export default function handler(req, res) {
 <body>
     <div class="container">
         <h1>Call History</h1>
+
+        <div class="nav-links">
+            <a href="/api/" class="nav-link">Make a Call</a>
+            <a href="/api/messages" class="nav-link">Messages Inbox</a>
+        </div>
 
         <div class="stats" id="stats">
             <div class="stat-card">

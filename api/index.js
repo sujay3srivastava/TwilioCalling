@@ -142,6 +142,27 @@ export default function handler(req, res) {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .nav-link {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -150,6 +171,11 @@ export default function handler(req, res) {
             <h1>📞</h1>
             <h1>Make a Call</h1>
             <p>Enter phone numbers to connect a call</p>
+        </div>
+
+        <div class="nav-links">
+            <a href="/api/messages" class="nav-link">Messages Inbox</a>
+            <a href="/api/call-history" class="nav-link">Call History</a>
         </div>
 
         <form id="callForm">
@@ -261,9 +287,13 @@ export default function handler(req, res) {
         timestamp: new Date().toISOString(),
         endpoints: {
             'GET /api/': 'Web interface for making calls',
+            'GET /api/messages': 'Messages inbox',
             'POST /api/make-call': 'Make outgoing calls',
             'POST /api/webhook/incoming-call': 'Handle incoming calls',
-            'POST /api/webhook/call-status': 'Handle call status updates'
+            'POST /api/webhook/incoming-message': 'Handle incoming messages',
+            'POST /api/webhook/call-status': 'Handle call status updates',
+            'GET /api/api/call-history': 'Fetch call history',
+            'GET /api/api/message-history': 'Fetch message history'
         }
     });
 }
