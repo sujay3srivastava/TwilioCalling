@@ -22,8 +22,15 @@ export default async function handler(req, res) {
         // Fetch messages from Twilio (default limit is 50, can be changed)
         const messages = await client.messages.list({ limit: 100 });
 
+        // Filter out WhatsApp messages (they have "whatsapp:" prefix in from/to)
+        const smsMessages = messages.filter(message => {
+            const fromNumber = message.from || '';
+            const toNumber = message.to || '';
+            return !fromNumber.startsWith('whatsapp:') && !toNumber.startsWith('whatsapp:');
+        });
+
         // Format the message data
-        const messageHistory = messages.map(message => ({
+        const messageHistory = smsMessages.map(message => ({
             sid: message.sid,
             direction: message.direction, // 'inbound' or 'outbound-api'
             from: message.from,
