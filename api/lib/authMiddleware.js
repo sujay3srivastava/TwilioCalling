@@ -26,7 +26,7 @@ function withAuth(handler, options = {}) {
           <!DOCTYPE html>
           <html>
           <head>
-            <meta http-equiv="refresh" content="0; url=/api/login">
+            <meta http-equiv="refresh" content="0; url=/api/auth">
             <title>Unauthorized</title>
           </head>
           <body>

@@ -1,6 +1,14 @@
-const { verifyPassword, generateToken, createAuthCookie, isAuthenticated } = require('./lib/auth');
+const { verifyPassword, generateToken, createAuthCookie, createLogoutCookie, isAuthenticated } = require('./lib/auth');
 
 export default function handler(req, res) {
+  // Handle logout via query parameter or DELETE method
+  if (req.url?.includes('logout') || req.method === 'DELETE') {
+    res.setHeader('Set-Cookie', createLogoutCookie());
+    res.setHeader('Location', '/api/auth');
+    res.status(302).end();
+    return;
+  }
+
   // If already authenticated, redirect to dashboard
   if (isAuthenticated(req)) {
     res.setHeader('Location', '/api/');
@@ -189,20 +197,6 @@ export default function handler(req, res) {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .default-password {
-            margin-top: 20px;
-            padding: 15px;
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            color: #0c5460;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-
-        .default-password strong {
-            color: #004085;
-        }
     </style>
 </head>
 <body>
@@ -253,7 +247,7 @@ export default function handler(req, res) {
             error.style.display = 'none';
 
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch('/api/auth', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

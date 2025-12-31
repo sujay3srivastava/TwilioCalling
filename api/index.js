@@ -178,7 +178,7 @@ function handler(req, res) {
         <div class="nav-links">
             <a href="/api/messages" class="nav-link">Messages Inbox</a>
             <a href="/api/call-history" class="nav-link">Call History</a>
-            <a href="/api/logout" class="nav-link" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">Logout</a>
+            <a href="/api/auth?logout" class="nav-link" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">Logout</a>
         </div>
 
         <form id="callForm">
