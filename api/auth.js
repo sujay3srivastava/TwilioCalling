@@ -1,4 +1,4 @@
-const { verifyPassword, generateToken, createAuthCookie, createLogoutCookie, isAuthenticated } = require('./lib/auth');
+const { verifyPassword, generateToken, createAuthCookie, createLogoutCookie, isAuthenticated } = require('./_lib/auth');
 
 export default function handler(req, res) {
   // Handle logout via query parameter or DELETE method

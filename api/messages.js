@@ -1,4 +1,4 @@
-const { withAuth } = require('./lib/authMiddleware');
+const { withAuth } = require('./_lib/authMiddleware');
 
 function handler(req, res) {
     res.setHeader('Content-Type', 'text/html');

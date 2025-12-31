@@ -1,5 +1,5 @@
 const twilio = require('twilio');
-const { withAuth } = require('../lib/authMiddleware');
+const { withAuth } = require('../_lib/authMiddleware');
 
 async function handler(req, res) {
     // Set CORS headers
