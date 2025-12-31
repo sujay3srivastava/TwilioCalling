@@ -1,6 +1,7 @@
 const twilio = require('twilio');
+const { withAuth } = require('./lib/authMiddleware');
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -42,3 +43,5 @@ export default async function handler(req, res) {
         });
     }
 }
+
+export default withAuth(handler, { type: 'api' });

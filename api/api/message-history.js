@@ -1,6 +1,7 @@
 const twilio = require('twilio');
+const { withAuth } = require('../lib/authMiddleware');
 
-export default async function handler(req, res) {
+async function handler(req, res) {
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -61,3 +62,5 @@ export default async function handler(req, res) {
         });
     }
 }
+
+export default withAuth(handler, { type: 'api' });

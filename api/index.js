@@ -1,4 +1,6 @@
-export default function handler(req, res) {
+const { withAuth } = require('./lib/authMiddleware');
+
+function handler(req, res) {
     // Serve HTML interface for GET requests
     if (req.method === 'GET') {
         res.setHeader('Content-Type', 'text/html');
@@ -176,6 +178,7 @@ export default function handler(req, res) {
         <div class="nav-links">
             <a href="/api/messages" class="nav-link">Messages Inbox</a>
             <a href="/api/call-history" class="nav-link">Call History</a>
+            <a href="/api/logout" class="nav-link" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">Logout</a>
         </div>
 
         <form id="callForm">
@@ -298,3 +301,5 @@ export default function handler(req, res) {
         }
     });
 }
+
+export default withAuth(handler, { type: 'html' });

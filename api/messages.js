@@ -1,4 +1,6 @@
-export default function handler(req, res) {
+const { withAuth } = require('./lib/authMiddleware');
+
+function handler(req, res) {
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(`<!DOCTYPE html>
 <html lang="en">
@@ -433,6 +435,7 @@ export default function handler(req, res) {
         <div class="nav-links">
             <a href="/api/" class="nav-link">Make a Call</a>
             <a href="/api/call-history" class="nav-link">Call History</a>
+            <a href="/api/logout" class="nav-link" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">Logout</a>
         </div>
 
         <div class="compose-section">
@@ -783,3 +786,5 @@ export default function handler(req, res) {
 </html>
     `);
 }
+
+export default withAuth(handler, { type: 'html' });
