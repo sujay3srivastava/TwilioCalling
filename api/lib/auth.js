@@ -1,9 +1,8 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-// PASSWORD HASH - Generated with bcrypt.hashSync('pixiedust', 10)
-// Current password: pixiedust
-// To change: Run node -e "const bcrypt = require('bcryptjs'); console.log(bcrypt.hashSync('your-password', 10));"
+// PASSWORD HASH - Bcrypt hashed password
+// To change: Run node -e "const bcrypt = require('bcryptjs'); console.log(bcrypt.hashSync('your-new-password', 10));"
 // Then replace PASSWORD_HASH below with the new hash
 const PASSWORD_HASH = '$2b$10$utXFaCrmm1BlCOlBUbyhfuoDkmYLG5BSQbU9Mu897O/iCpGuCc0CK';
 

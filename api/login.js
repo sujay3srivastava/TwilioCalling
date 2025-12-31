@@ -235,10 +235,6 @@ export default function handler(req, res) {
         </div>
 
         <div class="error" id="error"></div>
-
-        <div class="default-password">
-            <strong>Password:</strong> pixiedust
-        </div>
     </div>
 
     <script>
