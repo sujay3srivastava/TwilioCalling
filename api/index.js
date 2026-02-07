@@ -302,4 +302,4 @@ function handler(req, res) {
     });
 }
 
-export default withAuth(handler, { type: 'html' });
+module.exports = withAuth(handler, { type: 'html' });

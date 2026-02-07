@@ -52,4 +52,4 @@ async function handler(req, res) {
     }
 }
 
-export default withAuth(handler, { type: 'api' });
+module.exports = withAuth(handler, { type: 'api' });

@@ -1,6 +1,6 @@
 const { verifyPassword, generateToken, createAuthCookie, createLogoutCookie, isAuthenticated } = require('./_lib/auth');
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   // Handle logout via query parameter or DELETE method
   if (req.url?.includes('logout') || req.method === 'DELETE') {
     res.setHeader('Set-Cookie', createLogoutCookie());
